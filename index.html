@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Gerador de Frases Biblicas</title>
+	<link rel="stylesheet" type="text/css" href="estilo.css">
+</head>
+<body>
+<main>
+  <div class="eyebrow">
+    <span>Versículo</span>
+    <span><span id="verse-count">1</span> de <span id="verse-total">30</span></span>
+  </div>
+
+  <div class="quote-block">
+    <p id="verse-text"></p>
+    <p id="verse-ref"></p>
+  </div>
+
+  <div class="controls">
+    <button id="lang-toggle" aria-pressed="false" title="Trocar idioma">
+      <span class="lang-pt">PT</span> / <span class="lang-en">EN</span>
+    </button>
+    <button id="new-verse">Nova frase</button>
+  </div>
+
+  <footer>&copy; Arnaldo Zumba Todos os direitos reservado 2026</footer>
+</main>
+
+<script>
+  'use strict';
+ff
+  const verses = [
+    { book: "João", bookEn: "John", ref: "3:16",
+      pt: "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.",
+      en: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life." },
+    { book: "Salmos", bookEn: "Psalm", ref: "23:1",
+      pt: "O Senhor é o meu pastor; nada me faltará.",
+      en: "The LORD is my shepherd; I shall not want." },
+    { book: "Filipenses", bookEn: "Philippians", ref: "4:13",
+      pt: "Posso todas as coisas em Cristo que me fortalece.",
+      en: "I can do all things through Christ which strengtheneth me." },
+    { book: "Jeremias", bookEn: "Jeremiah", ref: "29:11",
+      pt: "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz, e não de mal, para vos dar o fim que esperais.",
+      en: "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end." },
+    { book: "Provérbios", bookEn: "Proverbs", ref: "3:5-6",
+      pt: "Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento. Reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas.",
+      en: "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths." },
+    { book: "Romanos", bookEn: "Romans", ref: "8:28",
+      pt: "E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito.",
+      en: "And we know that all things work together for good to them that love God, to them who are the called according to his purpose." },
+    { book: "Isaías", bookEn: "Isaiah", ref: "41:10",
+      pt: "Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.",
+      en: "Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee." },
+    { book: "Mateus", bookEn: "Matthew", ref: "6:33",
+      pt: "Mas buscai primeiro o reino de Deus, e a sua justiça, e todas essas coisas vos serão acrescentadas.",
+      en: "But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you." },
+    { book: "Salmos", bookEn: "Psalm", ref: "46:1",
+      pt: "Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.",
+      en: "God is our refuge and strength, a very present help in trouble." },
+    { book: "2 Timóteo", bookEn: "2 Timothy", ref: "1:7",
+      pt: "Porque Deus não nos deu o espírito de temor, mas de fortaleza, e de amor, e de moderação.",
+      en: "For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind." },
+    { book: "Josué", bookEn: "Joshua", ref: "1:9",
+      pt: "Esforça-te, e tem bom ânimo; não temas, nem te espantes; porque o Senhor teu Deus é contigo, por onde quer que andares.",
+      en: "Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest." },
+    { book: "Salmos", bookEn: "Psalm", ref: "27:1",
+      pt: "O Senhor é a minha luz e a minha salvação; a quem temerei? O Senhor é a força da minha vida; de quem me recearei?",
+      en: "The LORD is my light and my salvation; whom shall I fear? the LORD is the strength of my life; of whom shall I be afraid?" },
+    { book: "Romanos", bookEn: "Romans", ref: "12:2",
+      pt: "E não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento.",
+      en: "And be not conformed to this world: but be ye transformed by the renewing of your mind." },
+    { book: "1 Coríntios", bookEn: "1 Corinthians", ref: "13:4",
+      pt: "O amor é sofredor, é benigno; o amor não é invejoso; o amor não trata com leviandade, não se ensoberbece.",
+      en: "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up." },
+    { book: "Salmos", bookEn: "Psalm", ref: "119:105",
+      pt: "Lâmpada para os meus pés é tua palavra, e luz para o meu caminho.",
+      en: "Thy word is a lamp unto my feet, and a light unto my path." },
+    { book: "Mateus", bookEn: "Matthew", ref: "11:28",
+      pt: "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.",
+      en: "Come unto me, all ye that labour and are heavy laden, and I will give you rest." },
+    { book: "Filipenses", bookEn: "Philippians", ref: "4:6",
+      pt: "Não estejais inquietos por coisa alguma; antes as vossas petições sejam em tudo conhecidas diante de Deus pela oração e súplica, com ação de graças.",
+      en: "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God." },
+    { book: "Provérbios", bookEn: "Proverbs", ref: "16:3",
+      pt: "Confia ao Senhor as tuas obras, e teus pensamentos serão estabelecidos.",
+      en: "Commit thy works unto the LORD, and thy thoughts shall be established." },
+    { book: "Isaías", bookEn: "Isaiah", ref: "40:31",
+      pt: "Mas os que esperam no Senhor renovarão as forças, subirão com asas como águias; correrão, e não se cansarão.",
+      en: "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary." },
+    { book: "Salmos", bookEn: "Psalm", ref: "37:4",
+      pt: "Deleita-te também no Senhor, e ele te concederá o que deseja o teu coração.",
+      en: "Delight thyself also in the LORD; and he shall give thee the desires of thine heart." },
+    { book: "Colossenses", bookEn: "Colossians", ref: "3:23",
+      pt: "E tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor, e não aos homens.",
+      en: "And whatsoever ye do, do it heartily, as to the Lord, and not unto men." },
+    { book: "Hebreus", bookEn: "Hebrews", ref: "11:1",
+      pt: "Ora, a fé é o firme fundamento das coisas que se esperam, e a prova das coisas que se não veem.",
+      en: "Now faith is the substance of things hoped for, the evidence of things not seen." },
+    { book: "Salmos", bookEn: "Psalm", ref: "34:18",
+      pt: "Perto está o Senhor dos que têm o coração quebrantado, e salva os contritos de espírito.",
+      en: "The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit." },
+    { book: "Tiago", bookEn: "James", ref: "1:5",
+      pt: "E, se algum de vós tem falta de sabedoria, peça-a a Deus, que a todos dá liberalmente, e o não lança em rosto, e ser-lhe-á dada.",
+      en: "If any of you lack wisdom, let him ask of God, that giveth to all men liberally, and upbraideth not; and it shall be given him." },
+    { book: "Romanos", bookEn: "Romans", ref: "15:13",
+      pt: "Ora o Deus de esperança vos encha de todo o gozo e paz em crença, para que abundeis em esperança pela virtude do Espírito Santo.",
+      en: "Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost." },
+    { book: "Salmos", bookEn: "Psalm", ref: "91:1",
+      pt: "Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará.",
+      en: "He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty." },
+    { book: "Mateus", bookEn: "Matthew", ref: "28:20",
+      pt: "E eis que estou convosco todos os dias, até à consumação dos séculos.",
+      en: "And, lo, I am with you alway, even unto the end of the world." },
+    { book: "Gálatas", bookEn: "Galatians", ref: "5:22",
+      pt: "Mas o fruto do Espírito é: amor, gozo, paz, longanimidade, benignidade, bondade, fé.",
+      en: "But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith." },
+    { book: "1 Pedro", bookEn: "1 Peter", ref: "5:7",
+      pt: "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.",
+      en: "Casting all your care upon him; for he careth for you." },
+    { book: "Efésios", bookEn: "Ephesians", ref: "2:8",
+      pt: "Porque pela graça sois salvos, por meio da fé; e isto não vem de vós, é dom de Deus.",
+      en: "For by grace are ye saved through faith; and that not of yourselves: it is the gift of God." }
+  ];
+
+  /* ============================================
+     2) SELECIONAR ELEMENTOS DO DOM
+     Fazemos isto uma única vez, no topo, e guardamos
+     em constantes — evita repetir querySelector sempre
+     que precisamos do elemento.
+     ============================================ */
+  const verseTextEl  = document.getElementById('verse-text');
+  const verseRefEl   = document.getElementById('verse-ref');
+  const verseCountEl = document.getElementById('verse-count');
+  const verseTotalEl = document.getElementById('verse-total');
+  const langToggleBtn = document.getElementById('lang-toggle');
+  const newVerseBtn   = document.getElementById('new-verse');
+
+  /* ============================================
+     3) ESTADO — variáveis simples que guardam
+     "o que está a acontecer agora" na aplicação.
+     Não há framework nenhum: o estado é só isto.
+     ============================================ */
+  let currentLang = 'pt';   // 'pt' ou 'en'
+  let lastIndex = -1;       // índice do último versículo mostrado
+
+  verseTotalEl.textContent = verses.length;
+
+  /* ============================================
+     4) LÓGICA — escolher um índice aleatório
+     diferente do anterior, para não repetir
+     o mesmo versículo duas vezes seguidas.
+     ============================================ */
+  function pickRandomIndex(){
+    if (verses.length === 1) return 0;
+    let index;
+    do {
+      index = Math.floor(Math.random() * verses.length);
+    } while (index === lastIndex);
+    return index;
+  }
+
+  /* ============================================
+     5) RENDERIZAR — atualizar o conteúdo no ecrã.
+     Usamos textContent (não innerHTML) porque só
+     estamos a inserir texto simples, sem HTML —
+     é a forma mais segura e correta para este caso.
+     ============================================ */
+  function renderVerse(index){
+    const verse = verses[index];
+    const book = currentLang === 'pt' ? verse.book : verse.bookEn;
+    const text = currentLang === 'pt' ? verse.pt : verse.en;
+
+    // Retira a classe de animação, força o browser a "esquecer"
+    // o estado anterior, e volta a aplicar — é o truque clássico
+    // para reiniciar uma transição CSS via JS.
+    verseTextEl.classList.remove('is-visible');
+
+    // requestAnimationFrame garante que o browser já pintou o
+    // estado "invisível" antes de voltarmos a mostrar o texto —
+    // sem isto, a transição às vezes não dispara.
+    requestAnimationFrame(() => {
+      verseTextEl.textContent = text;
+      verseRefEl.textContent = `— ${book} ${verse.ref}`;
+      verseCountEl.textContent = index + 1;
+      verseTextEl.classList.add('is-visible');
+    });
+  }
+
+  /* ============================================
+     6) EVENTOS — ligar as funções aos cliques.
+     ============================================ */
+  newVerseBtn.addEventListener('click', () => {
+    lastIndex = pickRandomIndex();
+    renderVerse(lastIndex);
+  });
+
+  langToggleBtn.addEventListener('click', () => {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    // aria-pressed comunica o estado a leitores de ecrã
+    langToggleBtn.setAttribute('aria-pressed', currentLang === 'en');
+    renderVerse(lastIndex === -1 ? 0 : lastIndex);
+  });
+
+  /* ============================================
+     7) ARRANQUE — mostrar um versículo assim que
+     a página carrega.
+     ============================================ */
+  lastIndex = pickRandomIndex();
+  renderVerse(lastIndex);
+</script>
+
+</body>
+</html>
